@@ -1,0 +1,33 @@
+name: DevSecOps Pipeline
+
+on:
+  push:
+    branches: [ "main", "master"]
+
+jobs:
+  build-and-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do codigo
+        uses: actions/checkout@v4
+
+      - name: configurar JDK 17 java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: compilar codigo do java
+        run: javac src/Main.java
+
+      - name: build a imagem docker
+        run: docker build -t projeto1-java:${{ github.sha }} .
+
+      - name: Escaneamento com trivy (SCA)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'projeto1-java:${{ github.sha }} .
+          format: 'table'
+          exit-code: '0' # Mudar para '1' se quiseres bloquear o pipeline em caso de erros graves 
+          severity: 'CRITICAL,HIGTH'
