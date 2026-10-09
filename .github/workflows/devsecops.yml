@@ -27,7 +27,7 @@ jobs:
       - name: Escaneamento com trivy (SCA)
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'projeto1-java:${{ github.sha }} .
+          image-ref: projeto1-java:${{ github.sha }} .
           format: 'table'
           exit-code: '0' # Mudar para '1' se quiseres bloquear o pipeline em caso de erros graves 
           severity: 'CRITICAL,HIGTH'
