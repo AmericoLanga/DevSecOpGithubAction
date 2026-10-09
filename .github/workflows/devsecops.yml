@@ -30,4 +30,4 @@ jobs:
           image-ref: projeto1-java:${{ github.sha }} .
           format: 'table'
           exit-code: '0' # Mudar para '1' se quiseres bloquear o pipeline em caso de erros graves 
-          severity: 'CRITICAL,HIGTH'
+          severity: 'CRITICAL,HIGH'
