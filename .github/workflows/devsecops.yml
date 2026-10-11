@@ -2,12 +2,11 @@ name: DevSecOps Pipeline
 
 on:
   push:
-    branches: [ "main", "master"]
+    branches: [ "main", "master" ]
 
 jobs:
   build-and-scan:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout do codigo
         uses: actions/checkout@v4
@@ -22,12 +21,30 @@ jobs:
         run: javac src/Main.java
 
       - name: build a imagem docker
-        run: docker build -t projeto1-java:v2 .
+        run: docker build -t projetoi-java:v2 .
 
       - name: Escaneamento com trivy (SCA)
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'projeto1-java:v2'
+          image-ref: 'projetoi-java:v2'
           format: 'table'
-          exit-code: '0' # Mudar para '1' se quiseres bloquear o pipeline em caso de erros graves 
+          exit-code: '0'
           severity: 'CRITICAL,HIGH'
+
+  deploy:
+    needs: build-and-scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Conectar no Ubuntu via SSH e Atualizar o Docker
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          script: |
+            sudo docker stop container-java-v2 || true
+            sudo docker rm container-java-v2 || true
+            cd ~/ServidorJavaDevSecOps/projeto1/
+            sudo docker build -t projetoi-java:v2 .
+            sudo docker run -d --name container-java-v2 -p 8082:8082 --restart always projetoi-java:v2

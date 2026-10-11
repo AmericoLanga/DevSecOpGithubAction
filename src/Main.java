@@ -19,7 +19,7 @@ import java.util.Scanner;
 	  int dEncontro = velocidadeA * tAlcance;
 	   System.out.println("A distancia de encontro E: " +dEncontro+ " Segundos");
 
-/ 1. Primeiro, envie os cabeçalhos HTTP obrigatórios (O navegador exige isso!)
+// 1. Primeiro, envie os cabeçalhos HTTP obrigatórios (O navegador exige isso!)
 String cabecalho = "HTTP/1.1 200 OK\r\n" +
                    "Content-Type: text/html; charset=UTF-8\r\n" +
                    "Connection: close\r\n\r\n";
