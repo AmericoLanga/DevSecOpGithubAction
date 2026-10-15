@@ -32,19 +32,21 @@ jobs:
           severity: 'CRITICAL,HIGH'
 
   deploy:
-    needs: build-and-scan
-    runs-on: ubuntu-latest
-    steps:
-      - name: Conectar no Ubuntu via SSH e Atualizar o Docker
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: 22
-          script: |
-            sudo docker stop container-java-v2 || true
-            sudo docker rm container-java-v2 || true
-            cd ~/ServidorJavaDevSecOps/projeto1/
-            sudo docker build -t projetoi-java:v2 .
-            sudo docker run -d --name container-java-v2 -p 8082:8082 --restart always projetoi-java:v2
+  needs: build-and-scan
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout do codigo
+      uses: actions/checkout@v4
+
+    - name: Login no Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build e Push da Imagem Docker
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/meu-servidor-java:v2
